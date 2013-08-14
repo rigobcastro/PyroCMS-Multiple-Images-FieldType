@@ -3,13 +3,13 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
- * PyroStreams Relationship Field Type, 
+ * Upload Multiple Images Field Type, 
  *
  * @package		PyroCMS\Core\Modules\Streams Core\Field Types
- * @author		Parse19
- * @copyright	Copyright (c) 2011 - 2012, Parse19
+ * @author		Rigo B Castro
+ * @copyright           Copyright (c) 2011 - 2013, Rigo B Castro
  * @license		http://parse19.com/pyrostreams/docs/license
- * @link		http://parse19.com/pyrostreams
+ * @link		https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType
  */
 class Field_multiple_images {
 
