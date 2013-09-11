@@ -47,7 +47,7 @@ class Field_multiple_images {
      */
     public function form_output($data, $entry_id, $field)
     {
-        
+
         $this->_clean_files($field);
 
         $upload_url = site_url('admin/files/upload');
@@ -95,6 +95,24 @@ class Field_multiple_images {
 
     // --------------------------------------------------------------------------
 
+    /**
+     * User Field Type Query Build Hook
+     *
+     * This joins our user fields.
+     *
+     * @access 	public
+     * @param 	array 	&$sql 	The sql array to add to.
+     * @param 	obj 	$field 	The field obj
+     * @param 	obj 	$stream The stream object
+     * @return 	void
+     */
+    public function query_build_hook(&$sql, $field, $stream)
+    {
+        $sql['select'][] = $this->CI->db->protect_identifiers($stream->stream_prefix . $stream->stream_slug . '.id', true) . "as `" . $field->field_slug . "||{$field->field_data['resource_id_column']}`";
+    }
+
+    // --------------------------------------------------------------------------
+
     public function pre_save($images, $field, $stream, $row_id, $data_form)
     {
         $table_data = $this->_table_data($field);
@@ -102,7 +120,7 @@ class Field_multiple_images {
         $resource_id_column = $table_data->resource_id_column;
         $file_id_column = $table_data->file_id_column;
         $max_limit_images = (int) $field->field_data['max_limit_images'];
-        
+
         if (!empty($max_limit_images))
         {
             if (count($images) > $max_limit_images)
@@ -123,7 +141,7 @@ class Field_multiple_images {
                 foreach ($images as $file_id)
                 {
                     $check = !empty($max_limit_images) ? $count <= $max_limit_images : true;
-                    
+
                     if ($check)
                     {
                         if (!$this->CI->db->insert($table, array(
@@ -135,7 +153,7 @@ class Field_multiple_images {
                             return false;
                         }
                     }
-                    
+
                     $count++;
                 }
             }
@@ -235,34 +253,74 @@ class Field_multiple_images {
      */
     public function pre_output_plugin($row, $custom)
     {
-        if (!$row)
-            return null;
+        $table = $custom['field_data']['table_name'];
 
-        // Mini-cache for getting the related stream.
-        if (isset($this->cache[$custom['choose_stream']][$row]))
+        if (empty($table))
         {
-            return $this->cache[$custom['choose_stream']][$row];
+            $table = "{$custom['stream_slug']}_{$custom['field_slug']}";
         }
 
-        // Okay good to go
-        $stream = $this->CI->streams_m->get_stream($custom['choose_stream']);
+        $file_id_column = !empty($custom['field_data']['table_name']) ? $custom['field_data']['table_name'] : 'file_id';
 
-        // Do this gracefully
-        if (!$stream)
+
+        $images = $this->CI->db->where($custom['field_data']['resource_id_column'], (int) $row[$custom['field_data']['resource_id_column']])->get($table)->result_array();
+
+        if (!empty($images))
         {
-            return null;
+            foreach ($images as &$image)
+            {
+                $this->CI->load->library('files/files');
+                $file_id = $image[$file_id_column];
+                $file = Files::get_file($file_id);
+                $image_data = array();
+
+                if ($file['status'])
+                {
+                    $image = $file['data'];
+
+                    // If we don't have a path variable, we must have an
+                    // older style image, so let's create a local file path.
+                    if (!$image->path)
+                    {
+                        $image_data['image'] = base_url($this->CI->config->item('files:path') . $image->filename);
+                    }
+                    else
+                    {
+                        $image_data['image'] = str_replace('{{ url:site }}', base_url(), $image->path);
+                    }
+
+                    // For <img> tags only
+                    $alt = $this->obvious_alt($image);
+
+                    $image_data['filename'] = $image->filename;
+                    $image_data['name'] = $image->name;
+                    $image_data['alt'] = $image->alt_attribute;
+                    $image_data['description'] = $image->description;
+                    $image_data['img'] = img(array('alt' => $alt, 'src' => $image_data['image']));
+                    $image_data['ext'] = $image->extension;
+                    $image_data['mimetype'] = $image->mimetype;
+                    $image_data['width'] = $image->width;
+                    $image_data['height'] = $image->height;
+                    $image_data['id'] = $image->id;
+                    $image_data['filesize'] = $image->filesize;
+                    $image_data['download_count'] = $image->download_count;
+                    $image_data['date_added'] = $image->date_added;
+                    $image_data['folder_id'] = $image->folder_id;
+                    $image_data['folder_name'] = $image->folder_name;
+                    $image_data['folder_slug'] = $image->folder_slug;
+                    $image_data['thumb'] = site_url('files/thumb/' . $file_id);
+                    $image_data['thumb_img'] = img(array('alt' => $alt, 'src' => site_url('files/thumb/' . $file_id)));
+                }
+
+                $image = $image_data;
+            }
         }
 
-        $stream_fields = $this->CI->streams_m->get_stream_fields($stream->id);
-
-        // We should do something with this in the future.
-        $disable = array();
-
-        return $this->CI->row_m->format_row($row, $stream_fields, $stream, false, true, $disable);
+        return $images;
     }
 
     // ----------------------------------------------------------------------
-    
+
     /**
      * Choose a folder to upload to.
      *
@@ -300,8 +358,7 @@ class Field_multiple_images {
     }
 
     // --------------------------------------------------------------------------
-    
-     // --------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
 
     /**
      * Data for choice. In x : X format or just X format
@@ -346,9 +403,9 @@ class Field_multiple_images {
             'type' => 'text'
         ));
     }
-    
+
     // --------------------------------------------------------------------------
-    
+
     /**
      * Data for choice. In x : X format or just X format
      *
@@ -382,6 +439,30 @@ class Field_multiple_images {
             'type' => 'text'
         ));
     }
+
+    // ----------------------------------------------------------------------
+
+    /**
+     * Obvious alt attribute for <img> tags only
+     *
+     * @access	private
+     * @param	obj
+     * @return	string
+     */
+    private function obvious_alt($image)
+    {
+        if ($image->alt_attribute)
+        {
+            return $image->alt_attribute;
+        }
+        if ($image->description)
+        {
+            return $image->description;
+        }
+        return $image->name;
+    }
+
+    // ----------------------------------------------------------------------
 
     private function _table_data($field)
     {
