@@ -11,3 +11,7 @@ $lang['streams:multiple_images.drop_images_here'] = 'Deje las imágenes acá.';
 $lang['streams:multiple_images.max_limit_error'] = 'No se guardaron todas las imagenes porque se ha superado el límite permitido (%s).';
 $lang['streams:multiple_images.adding_error'] = 'No se pudo agregar el archivo, verifique que la extensión, las dimensiones y el tamaño del archivo sean los correctos.';
 $lang['streams:multiple_images.folder'] = 'Folder';
+$lang['streams:multiple_images.table_name'] = 'Nombre de la tabla';
+$lang['streams:multiple_images.resource_id_column'] = 'Nombre del campo relacionado';
+$lang['streams:multiple_images.file_id_column'] = 'Nombre del campo para la imagen';
+$lang['streams:multiple_images.max_limit_images'] = 'Cantidad de imagenes permitidas';

@@ -47,7 +47,9 @@ class Field_multiple_images {
      */
     public function form_output($data, $entry_id, $field)
     {
+        $this->CI->load->library('files/files');
 
+        
         $this->_clean_files($field);
 
         $upload_url = site_url('admin/files/upload');
@@ -88,8 +90,7 @@ class Field_multiple_images {
                 $data['images'] = $images_out;
             }
         }
-
-
+        $data['field_slug'] = $field->field_slug;
         return $this->CI->type->load_view('multiple_images', 'plupload_js', $data);
     }
 
@@ -114,7 +115,7 @@ class Field_multiple_images {
     // --------------------------------------------------------------------------
 
     public function pre_save($images, $field, $stream, $row_id, $data_form)
-    {
+    {   
         $table_data = $this->_table_data($field);
         $table = $table_data->table;
         $resource_id_column = $table_data->resource_id_column;
@@ -187,8 +188,10 @@ class Field_multiple_images {
      */
     public function pre_output($input, $data)
     {
+        
         if (!$input)
             return null;
+        
 
         $stream = $this->CI->streams_m->get_stream($data['choose_stream']);
 
@@ -260,11 +263,11 @@ class Field_multiple_images {
             $table = "{$custom['stream_slug']}_{$custom['field_slug']}";
         }
 
-        $file_id_column = !empty($custom['field_data']['table_name']) ? $custom['field_data']['table_name'] : 'file_id';
+        $file_id_column = !empty($custom['field_data']['file_id']) ? $custom['field_data']['file_id'] : 'file_id';
 
 
         $images = $this->CI->db->where($custom['field_data']['resource_id_column'], (int) $row[$custom['field_data']['resource_id_column']])->get($table)->result_array();
-
+        $return = array();
         if (!empty($images))
         {
             foreach ($images as &$image)
@@ -273,7 +276,6 @@ class Field_multiple_images {
                 $file_id = $image[$file_id_column];
                 $file = Files::get_file($file_id);
                 $image_data = array();
-
                 if ($file['status'])
                 {
                     $image = $file['data'];
@@ -312,11 +314,10 @@ class Field_multiple_images {
                     $image_data['thumb_img'] = img(array('alt' => $alt, 'src' => site_url('files/thumb/' . $file_id)));
                 }
 
-                $image = $image_data;
+                $return[] = $image_data;
             }
         }
-
-        return $images;
+        return $return;
     }
 
     // ----------------------------------------------------------------------
@@ -382,7 +383,7 @@ class Field_multiple_images {
         }
 
         return array(
-            'input' => form_dropdown('choice_table_name', $tables_dropdown, $value),
+            'input' => form_dropdown('table_name', $tables_dropdown, $value),
             'instructions' => $this->CI->lang->line('streams:choice_db.instructions_tablename')
         );
     }
@@ -477,6 +478,7 @@ class Field_multiple_images {
 
     private function _clean_files($field)
     {
+        
         $table_data = $this->_table_data($field);
 
         $content = Files::folder_contents($field->field_data['folder']);
