@@ -135,7 +135,7 @@ class Field_multiple_images {
             $this->CI->db->trans_begin();
 
             // Reset
-            if ($this->CI->db->delete($table, array($resource_id_column => $row_id)))
+            if ($this->CI->db->delete($table, array($resource_id_column => (int) $row_id)))
             {
                 $count = 1;
                 // Insert new images
