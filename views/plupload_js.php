@@ -24,7 +24,11 @@
 <script id="image-template" type="text/x-handlebars-template">
     <div id="file-{{id}}" class="thumb {{#unless is_new}} load {{/unless}}">
     <div class="image-preview">
-    <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
+    
+    {{#unless is_new}}
+        <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
+    {{/unless}}
+    
     <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
     <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
     <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
