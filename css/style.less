@@ -1,4 +1,5 @@
 @import 'elements.less';
+@import 'keyframes.less';
 
 @dropTargetColor: fadeout(gray, 60%);
 
@@ -89,7 +90,6 @@
 			.opacity(0);
 		}
 
-
 		&:hover{
 			.delete-image{
 				.opacity(1);
@@ -105,4 +105,44 @@
 		float: left;
 		.transition();
 	}
+
+
+	
 }
+
+	.loading-multiple-images{
+		cursor: wait;
+  		background-color: rgba(0,0,0,0);
+  		opacity: .8;
+  		border-radius: 50px;
+  		margin: 5% auto;
+
+  		animation: loading .5s infinite linear;
+ 		-moz-animation: loading .5s infinite linear;
+		-webkit-animation: loading .5s infinite linear;
+	}
+
+	.loading-multiple-images-spin-small{
+		border: 5px solid #fff;
+		border-top: 5px solid rgba(0,0,0,0);
+		border-left: 5px solid rgba(0,0,0,0);
+		width: 30px;
+		height: 30px; 
+	}
+
+	.loading-multiple-images-spin-medium{
+	  border: 10px solid #fff;
+	  border-top: 10px solid rgba(0,0,0,0);
+	  border-left: 10px solid rgba(0,0,0,0);
+	  width: 50px;
+	  height: 50px; 
+	}
+
+	.loading-multiple-images-spin-large{
+	  border: 20px solid #fff;
+	  border-top: 20px solid rgba(0,0,0,0);
+	  border-left: 20px solid rgba(0,0,0,0);
+	  width: 100px;
+	  height: 100px; 
+	  border-radius: 100px !important;
+	}
