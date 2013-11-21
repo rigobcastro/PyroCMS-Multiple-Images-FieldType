@@ -1,3 +1,7 @@
+
+
+
+
 <div id="upload-container">
     <div id="drop-target">
         <div class="drop-area" style="display: none;">
@@ -10,16 +14,25 @@
     </div>
 </div>
 
-<div id="multiple-images-gallery"></div>
+<div id="multiple-images-gallery">
+</div>
 <div style="clear: both"></div>
+
+
+
 
 <script id="image-template" type="text/x-handlebars-template">
     <div id="file-{{id}}" class="thumb {{#unless is_new}} load {{/unless}}">
-        <div class="image-preview">
-            <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
-            <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
-            <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
-        </div>
+    <div class="image-preview">
+    
+    {{#if is_new}}
+        <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
+    {{/if}}
+    
+    <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
+    <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
+    <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
+    </div>
     </div>
 </script>
 
@@ -42,11 +55,11 @@
         });
 
         var nativeFiles = {},
-        isHTML5 = false,
-        $image_template = Handlebars.compile($('#image-template').html()),
-        $images_list = $('#multiple-images-gallery'),
-        entry_is_new = <?= json_encode($is_new) ?>,
-        images = <?= json_encode($images) ?>;
+            isHTML5 = false,
+            $image_template = Handlebars.compile($('#image-template').html()),
+            $images_list = $('#multiple-images-gallery'),
+            entry_is_new = <?= json_encode($is_new) ?>,
+            images = <?= json_encode($images) ?>;
 
         uploader.bind('PostInit', function() {
             isHTML5 = uploader.runtime === "html5";
@@ -134,6 +147,7 @@
             var response = JSON.parse(info.response);
             $file(file.id).addClass('load').find('.images-input').val(response.data.id);
             $file(file.id).find('.image-link').attr('href', response.data.path.replace("{{ url:site }}", SITE_URL));
+            $file(file.id).find('.loading-multiple-images').remove();
 
             /* Off: Prevent close while upload */
             $(window).off('beforeunload');
@@ -165,7 +179,7 @@
 
         $(document).on('click', '.delete-image', function(e) {
             var $this = $(this),
-            file_id = $this.parent().find('input.images-input').val();
+                file_id = $this.parent().find('input.images-input').val();
 
             if (confirm(pyro.lang.dialog_message)) {
                 $.post(SITE_URL + 'admin/files/delete_file', {file_id: file_id}, function(json) {
@@ -187,7 +201,7 @@
             placeholder: "sortable-placeholder",
             update: function() {
                 var sortedIDs = $(this).sortable("toArray"),
-                data = {order: {files: []}};
+                    data = {order: {files: []}};
 
                 for (var id in sortedIDs) {
                     data.order.files.push(sortedIDs[id].replace('file-', ''));
