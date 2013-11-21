@@ -5,10 +5,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * Upload Multiple Images Field Type, 
  *
- * @package		PyroCMS\Core\Modules\Streams Core\Field Types
  * @author		Rigo B Castro
- * @copyright           Copyright (c) 2011 - 2013, Rigo B Castro
- * @license		http://parse19.com/pyrostreams/docs/license
+ * @author      Jose Fonseca
+ * @copyright           Copyright (c) 2011 - 2013, We dream pro
  * @link		https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType
  */
 class Field_multiple_images {
@@ -17,7 +16,7 @@ class Field_multiple_images {
     public $db_col_type = false;
     public $custom_parameters = array('folder', 'table_name', 'resource_id_column', 'file_id_column', 'max_limit_images');
     public $version = '1.1.0';
-    public $author = array('name' => 'Rigo B Castro', 'url' => 'http://rigobcastro.com');
+    public $author = array('name' => 'We dream Pro', 'url' => 'http://wedreampro.com');
 
     // --------------------------------------------------------------------------
 
@@ -58,10 +57,10 @@ class Field_multiple_images {
             'multipart_params' => array(
                 $this->CI->security->get_csrf_token_name() => $this->CI->security->get_csrf_hash(),
                 'folder_id' => $field->field_data['folder'],
-            ),
+                ),
             'upload_url' => $upload_url,
             'is_new' => empty($entry_id)
-        );
+            );
 
         if (!empty($entry_id))
         {
@@ -71,7 +70,7 @@ class Field_multiple_images {
             $this->CI->db->join('files as F', "F.id = {$table_data->table}.{$table_data->file_id_column}");
 
             $images = $this->CI->db->order_by('F.sort', 'ASC')->get_where($table_data->table, array(
-                    $table_data->resource_id_column => $entry_id
+                $table_data->resource_id_column => $entry_id
                 ))->result();
 
             if (!empty($images))
@@ -84,7 +83,7 @@ class Field_multiple_images {
                         'name' => $image->name,
                         'url' => str_replace('{{ url:site }}', base_url(), $image->path),
                         'is_new' => false
-                    );
+                        );
                 }
 
                 $data['images'] = $images_out;
@@ -146,8 +145,8 @@ class Field_multiple_images {
                     if ($check)
                     {
                         if (!$this->CI->db->insert($table, array(
-                                $resource_id_column => $row_id,
-                                $file_id_column => $file_id
+                            $resource_id_column => $row_id,
+                            $file_id_column => $file_id
                             )))
                         {
                             $this->CI->session->set_flashdata('error', 'Error al guardar las nuevas imagenes');
@@ -188,7 +187,7 @@ class Field_multiple_images {
      */
     public function pre_output($input, $data)
     {
-        
+
         if (!$input)
             return null;
         
@@ -219,10 +218,10 @@ class Field_multiple_images {
         // -------------------------------------
 
         $row = $this->CI->db
-            ->select()
-            ->where('id', $input)
-            ->get($stream->stream_prefix . $stream->stream_slug)
-            ->row_array();
+        ->select()
+        ->where('id', $input)
+        ->get($stream->stream_prefix . $stream->stream_slug)
+        ->row_array();
 
         if ($this->CI->uri->segment(1) == 'admin')
         {
@@ -385,7 +384,7 @@ class Field_multiple_images {
         return array(
             'input' => form_dropdown('table_name', $tables_dropdown, $value),
             'instructions' => $this->CI->lang->line('streams:choice_db.instructions_tablename')
-        );
+            );
     }
 
     /**
@@ -402,7 +401,7 @@ class Field_multiple_images {
             'name' => 'resource_id_column',
             'value' => !empty($value) ? $value : 'resource_id',
             'type' => 'text'
-        ));
+            ));
     }
 
     // --------------------------------------------------------------------------
@@ -421,7 +420,7 @@ class Field_multiple_images {
             'name' => 'file_id_column',
             'value' => !empty($value) ? $value : 'file_id',
             'type' => 'text'
-        ));
+            ));
     }
 
     /**
@@ -438,7 +437,7 @@ class Field_multiple_images {
             'name' => 'max_limit_images',
             'value' => !empty($value) ? $value : 5,
             'type' => 'text'
-        ));
+            ));
     }
 
     // ----------------------------------------------------------------------
@@ -468,17 +467,17 @@ class Field_multiple_images {
     private function _table_data($field)
     {
         return (object) array(
-                'table' => (!empty($field->field_data['table_name']) ? $field->field_data['table_name'] : "{$field->stream_slug}_{$field->field_slug}"),
-                'resource_id_column' => $field->field_data['resource_id_column'],
-                'file_id_column' => (!empty($field->field_data['file_id_column']) ? $field->field_data['file_id_column'] : 'file_id')
-        );
+            'table' => (!empty($field->field_data['table_name']) ? $field->field_data['table_name'] : "{$field->stream_slug}_{$field->field_slug}"),
+            'resource_id_column' => $field->field_data['resource_id_column'],
+            'file_id_column' => (!empty($field->field_data['file_id_column']) ? $field->field_data['file_id_column'] : 'file_id')
+            );
     }
 
     // ----------------------------------------------------------------------
 
     private function _clean_files($field)
     {
-        
+
         $table_data = $this->_table_data($field);
 
         $content = Files::folder_contents($field->field_data['folder']);
