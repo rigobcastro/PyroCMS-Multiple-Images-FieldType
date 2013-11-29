@@ -43,7 +43,7 @@
             browse_button: 'drop-target',
             drop_element: 'drop-target',
             container: 'upload-container',
-            max_file_size: '10mb',
+            max_file_size: '<?= Settings::get('files_upload_limit') ?>mb',
             url: <?= json_encode($upload_url) ?>,
             flash_swf_url: '/plupload/js/plupload.flash.swf',
             silverlight_xap_url: '/plupload/js/plupload.silverlight.xap',
