@@ -45,6 +45,7 @@
 #multiple-images-gallery {
   margin: 2em 0 !important;
   display: block;
+  overflow: hidden;
 }
 #multiple-images-gallery .thumb {
   float: left;
@@ -57,7 +58,7 @@
   margin-left: 0;
 }
 #multiple-images-gallery .thumb .image-preview {
-  width: 350px;
+  width: 315px;
   height: 200px;
   overflow: hidden;
   position: relative;
