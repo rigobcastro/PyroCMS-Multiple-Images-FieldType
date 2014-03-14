@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Pyrocms-multiple-images-fieldtype by WeDreamPro</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Pyrocms-multiple-images-fieldtype</h1>
+        <h2></h2>
+
+        <section id="downloads">
+          <a href="https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/WeDreamPro/PyroCMS-Multiple-Images-FieldType" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a name="pyrocms-multiple-images-fieldtype" class="anchor" href="#pyrocms-multiple-images-fieldtype"><span class="octicon octicon-link"></span></a>PyroCMS-Multiple-Images-FieldType</h1>
+
+<p>Add multiple images to your streams using a very nice html5 file uploader <a href="http://www.plupload.com/">plupload</a> version 1.5.7</p>
+
+<h1>
+<a name="team" class="anchor" href="#team"><span class="octicon octicon-link"></span></a>Team</h1>
+
+<p><a href="http://josefonseca.me">Jose Luis Fonseca</a></p>
+
+<p><a href="http://twitter.com/rigobcastro">Rigo B Castro</a></p>
+
+<h1>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<ol>
+<li>Download the zip package</li>
+<li>Create a folder under addons/shared_addons/field_types/ and name it multiple_images</li>
+<li>Copy and paste the zip content.</li>
+</ol><p>That's it!</p>
+
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>Drop or select images from your PC, they will be uploaded and related to the entry, once you are ready to use them in your front end do </p>
+
+<pre><code>{{field_slug}}
+    {{img}}
+{{/field_slug}}
+</code></pre>
+
+<h1>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>Properties</h1>
+
+<p>The field type has the following properties when you set it up:</p>
+
+<p><b>Images Folder:</b> Since it uses the files module, you must select a folder to upload the images</p>
+
+<p><b>Max Images:</b> By default it will be 5, you can change this to the number of images you want to limit.</p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-48981413-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
