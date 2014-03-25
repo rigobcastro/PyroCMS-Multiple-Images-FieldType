@@ -191,26 +191,14 @@ class Field_multiple_images {
     }
 
     // --------------------------------------------------------------------------
-
-    /**
-     * Pre Ouput Plugin
-     * 
-     * This takes the data from the join array
-     * and formats it using the row parser.
-     *
-     * @access	public
-     * @param	array 	$row 		the row data from the join
-     * @param	array  	$custom 	custom field data
-     * @param	mixed 	null or formatted array
-     */
-    public function pre_output_plugin($row, $custom) {
-        $table = $this->_table_data($custom);
-        if (empty($table->table)) {
-            $table->table = "{$custom['stream_slug']}_{$custom['field_slug']}";
-        }
+    
+    /** Alt Pre output **/
+    
+    public function alt_pre_output($row_id, $params, $field_type, $stream){
+        $table = $this->_table_data((object)$params);
         $file_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'file_id';
-        $resource_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'resource_id';
-        $images = $this->CI->db->where($resource_id_column, (int) $row[$resource_id_column])->get($table->table)->result_array();
+        $resource_id_column = !empty($table->resource_id) ? $table->resource_id : 'resource_id';
+        $images = $this->CI->db->where($resource_id_column, (int) $row_id)->get($table->table)->result_array();
         $return = array();
         if (!empty($images)) {
             foreach ($images as &$image) {
