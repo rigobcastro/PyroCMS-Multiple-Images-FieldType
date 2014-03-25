@@ -16,7 +16,7 @@ class Field_multiple_images {
     public $alt_process = true;
     public $db_col_type = false;
     public $custom_parameters = array('folder', 'max_limit_images');
-    public $version = '1.2.0';
+    public $version = '1.3.0';
     public $author = array('name' => 'We dream Pro', 'url' => 'http://wedreampro.com');
 
     // --------------------------------------------------------------------------
@@ -173,7 +173,7 @@ class Field_multiple_images {
             return $row;
         }
     }
-    
+
     /**
      * User Field Type Query Build Hook
      *
@@ -191,11 +191,10 @@ class Field_multiple_images {
     }
 
     // --------------------------------------------------------------------------
-    
-    /** Alt Pre output **/
-    
-    public function alt_pre_output($row_id, $params, $field_type, $stream){
-        $table = $this->_table_data((object)$params);
+
+    /** Alt Pre output * */
+    public function alt_pre_output($row_id, $params, $field_type, $stream) {
+        $table = $this->_table_data((object) $params);
         $file_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'file_id';
         $resource_id_column = !empty($table->resource_id) ? $table->resource_id : 'resource_id';
         $images = $this->CI->db->where($resource_id_column, (int) $row_id)->get($table->table)->result_array();
