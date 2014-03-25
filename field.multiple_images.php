@@ -79,23 +79,6 @@ class Field_multiple_images {
 
     // --------------------------------------------------------------------------
 
-    /**
-     * User Field Type Query Build Hook
-     *
-     * This joins our user fields.
-     *
-     * @access 	public
-     * @param 	array 	&$sql 	The sql array to add to.
-     * @param 	obj 	$field 	The field obj
-     * @param 	obj 	$stream The stream object
-     * @return 	void
-     */
-    public function query_build_hook(&$sql, $field, $stream) {
-        $sql['select'][] = $this->CI->db->protect_identifiers($stream->stream_prefix . $stream->stream_slug . '.id', true) . "as `" . $field->field_slug . "||{$field->field_data['resource_id_column']}`";
-    }
-
-    // --------------------------------------------------------------------------
-
     public function pre_save($images, $field, $stream, $row_id, $data_form) {
         $table_data = $this->_table_data($field);
         $table = $table_data->table;
@@ -190,6 +173,22 @@ class Field_multiple_images {
             return $row;
         }
     }
+    
+    /**
+     * User Field Type Query Build Hook
+     *
+     * This joins our user fields.
+     *
+     * @access 	public
+     * @param 	array 	&$sql 	The sql array to add to.
+     * @param 	obj 	$field 	The field obj
+     * @param 	obj 	$stream The stream object
+     * @return 	void
+     */
+    public function query_build_hook(&$sql, $field, $stream) {
+        $table = $this->_table_data($field);
+        $sql['select'][] = $this->CI->db->protect_identifiers($stream->stream_prefix . $stream->stream_slug . '.id', true) . "as `" . $field->field_slug . "||{$table->resource_id_column}`";
+    }
 
     // --------------------------------------------------------------------------
 
@@ -205,13 +204,13 @@ class Field_multiple_images {
      * @param	mixed 	null or formatted array
      */
     public function pre_output_plugin($row, $custom) {
-        $this->CI->load->library('files/files');
-        $table = $custom['field_data']['table_name'];
-        if (empty($table)) {
-            $table = "{$custom['stream_slug']}_{$custom['field_slug']}";
+        $table = $this->_table_data($custom);
+        if (empty($table->table)) {
+            $table->table = "{$custom['stream_slug']}_{$custom['field_slug']}";
         }
-        $file_id_column = !empty($custom['field_data']['file_id']) ? $custom['field_data']['file_id'] : 'file_id';
-        $images = $this->CI->db->where($custom['field_data']['resource_id_column'], (int) $row[$custom['field_data']['resource_id_column']])->get($table)->result_array();
+        $file_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'file_id';
+        $resource_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'resource_id';
+        $images = $this->CI->db->where($resource_id_column, (int) $row[$resource_id_column])->get($table->table)->result_array();
         $return = array();
         if (!empty($images)) {
             foreach ($images as &$image) {
