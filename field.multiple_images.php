@@ -16,7 +16,7 @@ class Field_multiple_images {
     public $alt_process = true;
     public $db_col_type = false;
     public $custom_parameters = array('folder', 'max_limit_images');
-    public $version = '1.3.0';
+    public $version = '1.3.1';
     public $author = array('name' => 'We dream Pro', 'url' => 'http://wedreampro.com');
 
     // --------------------------------------------------------------------------
