@@ -1,0 +1,182 @@
+@import 'elements.less';
+@import 'keyframes.less';
+
+@dropTargetColor: fadeout(gray, 60%);
+
+@thumb_width : 308px;
+@thumb_height : 200px;
+@img_thumb_opacity : 0.2;
+@marginThumb : 0 0 1.2em 1em;
+
+@deleteImageBorderColor : fadeout(white, 10%);
+
+.grayFilter(@c : 1){
+    -webkit-filter: grayscale(@c);
+    filter:gray;
+}
+
+@font-face {
+    font-family: 'icomoon';
+    src:url('../fonts/icomoon.eot?9d838p');
+    src:url('../fonts/icomoon.eot?#iefix9d838p') format('embedded-opentype'),
+        url('../fonts/icomoon.woff?9d838p') format('woff'),
+        url('../fonts/icomoon.ttf?9d838p') format('truetype'),
+        url('../fonts/icomoon.svg?9d838p#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+[class^="iconmoon-"], [class*=" -"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+.iconmoon-pencil:before {
+    content: "\e600";
+}
+.iconmoon-close:before {
+    content: "\e601";
+}
+
+
+
+#drop-target{
+
+    &.html5{
+        border: 2px dashed @dropTargetColor;
+        color: fadein(@dropTargetColor, 10%);
+        display: block;
+        padding: 2em 1em;
+        text-align: center;
+        cursor: pointer;
+        font-weight: bold;
+        margin: 1em 0;
+
+        .transition();
+
+        &.dragenter{
+            background-color: fadeout(cyan, 95%);
+            border-color: fadein(@dropTargetColor, 80%);
+            color: fadein(@dropTargetColor, 80%);
+            content : 'test';
+        }
+    }
+}
+
+#multiple-images-gallery{
+    margin: 2em 0 !important;
+    display: block;
+    overflow: hidden;
+    .thumb{
+        float: left;
+        display: inline-block;
+        margin: @marginThumb;
+        border: 1px solid rgba(0,0,0,0.2);
+        padding: 2px;
+
+        &:nth-child(3n+1){
+            margin-left: 0;
+        }
+
+        .image-preview{
+            width: @thumb_width;
+            height: @thumb_height;
+            overflow: hidden;
+            position: relative;
+            display: block;
+            background: rgba(0,0,0,0.2);
+
+            img {
+                width: 100%;
+                .opacity(@img_thumb_opacity);
+                .transition(.5s);
+            }
+        }
+
+        &.load{
+            .image-preview img{
+                .opacity(1);
+                .grayFilter(0);
+            }
+            .delete-image{
+                display: block;
+            }
+        }
+
+        .delete-image{
+            color: white;
+            position: absolute;
+            top: .5em;
+            right: .5em;
+            display:none;
+            background: fadeout(black, 30%);
+            padding: .2em .3em;
+            border: 1px solid @deleteImageBorderColor;
+            .opacity(0);
+        }
+
+        &:hover{
+            .delete-image{
+                .opacity(1);
+            }
+        }
+    }
+
+    .sortable-placeholder{
+        background: fadeout(gray, 80%);
+        width: .5em;
+        height: @thumb_height;
+        display: inline-block;
+        float: left;
+        .transition();
+    }
+}
+
+.loading-multiple-images{
+    cursor: wait;
+    background-color: rgba(0,0,0,0);
+    opacity: .8;
+    border-radius: 50px;
+    margin: 5% auto;
+
+    animation: loading .5s infinite linear;
+    -moz-animation: loading .5s infinite linear;
+    -webkit-animation: loading .5s infinite linear;
+}
+
+.loading-multiple-images-spin-small{
+    border: 5px solid #fff;
+    border-top: 5px solid rgba(0,0,0,0);
+    border-left: 5px solid rgba(0,0,0,0);
+    width: 30px;
+    height: 30px;
+}
+
+.loading-multiple-images-spin-medium{
+    border: 10px solid #fff;
+    border-top: 10px solid rgba(0,0,0,0);
+    border-left: 10px solid rgba(0,0,0,0);
+    width: 50px;
+    height: 50px;
+}
+
+.loading-multiple-images-spin-large{
+    border: 20px solid #fff;
+    border-top: 20px solid rgba(0,0,0,0);
+    border-left: 20px solid rgba(0,0,0,0);
+    width: 100px;
+    height: 100px;
+    border-radius: 100px !important;
+}

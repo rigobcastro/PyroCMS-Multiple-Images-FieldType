@@ -15,7 +15,7 @@ class Field_multiple_images {
     public $field_type_slug = 'multiple_images';
     public $alt_process = true;
     public $db_col_type = false;
-    public $custom_parameters = array('folder', 'max_limit_images');
+    public $custom_parameters = array('folder', 'max_limit_images', 'table_name', 'resource_id_column', 'file_id_column');
     public $version = '1.3.1';
     public $author = array('name' => 'We dream Pro', 'url' => 'http://wedreampro.com');
 
@@ -28,8 +28,8 @@ class Field_multiple_images {
 
     // --------------------------------------------------------------------------
 
-    public function event($field) {
-        $this->CI->type->add_misc('<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">');
+    public function event($field)
+    {
         $this->CI->type->add_css('multiple_images', 'style.css');
         $this->CI->type->add_js('multiple_images', 'plupload.full.js');
         $this->CI->type->add_js('multiple_images', 'handlebars.js');
@@ -42,7 +42,10 @@ class Field_multiple_images {
      * @param	array
      * @return	string
      */
-    public function form_output($data, $entry_id, $field) {
+    public function form_output($data, $entry_id, $field)
+    {
+
+
         $this->CI->load->library('files/files');
         $this->_clean_files($field);
         $upload_url = site_url('admin/files/upload');
@@ -54,15 +57,18 @@ class Field_multiple_images {
             'upload_url' => $upload_url,
             'is_new' => empty($entry_id)
         );
-        if (!empty($entry_id)) {
+        if (!empty($entry_id))
+        {
             $table_data = $this->_table_data($field);
             $images_out = array();
             $this->CI->db->join('files as F', "F.id = {$table_data->table}.{$table_data->file_id_column}");
             $images = $this->CI->db->order_by('F.sort', 'ASC')->get_where($table_data->table, array(
-                        $table_data->resource_id_column => $entry_id
-                    ))->result();
-            if (!empty($images)) {
-                foreach ($images as $image) {
+                    $table_data->resource_id_column => $entry_id
+                ))->result();
+            if (!empty($images))
+            {
+                foreach ($images as $image)
+                {
                     $images_out[] = array(
                         'id' => $image->{$table_data->file_id_column},
                         'name' => $image->name,
@@ -74,48 +80,59 @@ class Field_multiple_images {
             }
         }
         $data['field_slug'] = $field->field_slug;
-        return $this->CI->type->load_view('multiple_images', 'plupload_js', $data);
+        return $this->CI->type->load_view('multiple_images', 'upload', $data);
     }
 
     // --------------------------------------------------------------------------
 
-    public function pre_save($images, $field, $stream, $row_id, $data_form) {
+    public function pre_save($images, $field, $stream, $row_id, $data_form)
+    {
         $table_data = $this->_table_data($field);
         $table = $table_data->table;
         $resource_id_column = $table_data->resource_id_column;
         $file_id_column = $table_data->file_id_column;
         $max_limit_images = (int) $field->field_data['max_limit_images'];
-        if (!empty($max_limit_images)) {
-            if (count($images) > $max_limit_images) {
+        if (!empty($max_limit_images))
+        {
+            if (count($images) > $max_limit_images)
+            {
                 $this->CI->session->set_flashdata('notice', sprintf(lang('streams:multiple_images.max_limit_error'), $max_limit_images));
             }
         }
-        if ($this->CI->db->table_exists($table)) {
+        if ($this->CI->db->table_exists($table))
+        {
             $this->CI->db->trans_begin();
             // Reset
-            if (!empty($row_id)) {
+            if (!empty($row_id))
+            {
                 $this->CI->db->delete($table, array($resource_id_column => (int) $row_id));
             }
             $count = 1;
             // Insert new images
-            foreach ($images as $file_id) {
+            foreach ($images as $file_id)
+            {
                 $check = !empty($max_limit_images) ? $count <= $max_limit_images : true;
-                if ($check) {
+                if ($check)
+                {
                     if (!$this->CI->db->insert($table, array(
-                                $resource_id_column => $row_id,
-                                $file_id_column => $file_id
-                            ))) {
+                            $resource_id_column => $row_id,
+                            $file_id_column => $file_id
+                        )))
+                    {
                         $this->CI->session->set_flashdata('error', 'Error al guardar las nuevas imagenes');
                         return false;
                     }
                 }
                 $count++;
             }
-            if ($this->CI->db->trans_status() === FALSE) {
+            if ($this->CI->db->trans_status() === FALSE)
+            {
                 $this->CI->db->trans_rollback();
                 $this->CI->session->set_flashdata('error', 'Error al guardar las nuevas imagenes');
                 return false;
-            } else {
+            }
+            else
+            {
                 $this->CI->db->trans_commit();
             }
         }
@@ -135,9 +152,13 @@ class Field_multiple_images {
      * @param	array 	$input 	
      * @return	mixed 	null or string
      */
-    public function pre_output($input, $data) {
+    public function pre_output($input, $data)
+    {
         if (!$input)
+        {
             return null;
+        }
+
         $stream = $this->CI->streams_m->get_stream($data['choose_stream']);
         $title_column = $stream->title_column;
         // -------------------------------------
@@ -145,13 +166,15 @@ class Field_multiple_images {
         // -------------------------------------
         // Make sure the table exists still. If it was deleted we don't want to
         // have everything go to hell.
-        if (!$this->CI->db->table_exists($stream->stream_prefix . $stream->stream_slug)) {
+        if (!$this->CI->db->table_exists($stream->stream_prefix . $stream->stream_slug))
+        {
             return null;
         }
 
         // We need to make sure the select is NOT NULL.
         // So, if we have no title column, let's use the id
-        if (trim($title_column) == '') {
+        if (trim($title_column) == '')
+        {
             $title_column = 'id';
         }
 
@@ -159,17 +182,23 @@ class Field_multiple_images {
         // Get the entry
         // -------------------------------------
         $row = $this->CI->db
-                ->select()
-                ->where('id', $input)
-                ->get($stream->stream_prefix . $stream->stream_slug)
-                ->row_array();
-        if ($this->CI->uri->segment(1) == 'admin') {
-            if (isset($data['link_uri']) and !empty($data['link_uri'])) {
+            ->select()
+            ->where('id', $input)
+            ->get($stream->stream_prefix . $stream->stream_slug)
+            ->row_array();
+        if ($this->CI->uri->segment(1) == 'admin')
+        {
+            if (isset($data['link_uri']) and ! empty($data['link_uri']))
+            {
                 return '<a href="' . site_url(str_replace(array('-id-', '-stream-'), array($row['id'], $stream->stream_slug), $data['link_uri'])) . '">' . $row[$title_column] . '</a>';
-            } else {
+            }
+            else
+            {
                 return '<a href="' . site_url('admin/streams/entries/view/' . $stream->id . '/' . $row['id']) . '">' . $row[$title_column] . '</a>';
             }
-        } else {
+        }
+        else
+        {
             return $row;
         }
     }
@@ -185,7 +214,8 @@ class Field_multiple_images {
      * @param 	obj 	$stream The stream object
      * @return 	void
      */
-    public function query_build_hook(&$sql, $field, $stream) {
+    public function query_build_hook(&$sql, $field, $stream)
+    {
         $table = $this->_table_data($field);
         $sql['select'][] = $this->CI->db->protect_identifiers($stream->stream_prefix . $stream->stream_slug . '.id', true) . "as `" . $field->field_slug . "||{$table->resource_id_column}`";
     }
@@ -193,25 +223,37 @@ class Field_multiple_images {
     // --------------------------------------------------------------------------
 
     /** Alt Pre output * */
-    public function alt_pre_output($row_id, $params, $field_type, $stream) {
-        $table = $this->_table_data((object) $params);
-        $file_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'file_id';
-        $resource_id_column = !empty($table->resource_id) ? $table->resource_id : 'resource_id';
-        $images = $this->CI->db->where($resource_id_column, (int) $row_id)->get($table->table)->result_array();
+    public function alt_pre_output($row_id, $params, $field_type, $stream)
+    {
+
+
+        $table = $params['field_data']['table_name'];
+        $file_id_column = 'file_id';
+        $resource_id_column = $params['field_data']['resource_id_column'];
+
+        $images = $this->CI->db->where($resource_id_column, (int) $row_id)->get($table)->result_array();
         $return = array();
-        if (!empty($images)) {
-            foreach ($images as &$image) {
+
+
+        if (!empty($images))
+        {
+            foreach ($images as &$image)
+            {
                 $this->CI->load->library('files/files');
                 $file_id = $image[$file_id_column];
                 $file = Files::get_file($file_id);
                 $image_data = array();
-                if ($file['status']) {
+                if ($file['status'])
+                {
                     $image = $file['data'];
                     // If we don't have a path variable, we must have an
                     // older style image, so let's create a local file path.
-                    if (!$image->path) {
+                    if (!$image->path)
+                    {
                         $image_data['image'] = base_url($this->CI->config->item('files:path') . $image->filename);
-                    } else {
+                    }
+                    else
+                    {
                         $image_data['image'] = str_replace('{{ url:site }}', base_url(), $image->path);
                     }
                     // For <img> tags only
@@ -250,22 +292,27 @@ class Field_multiple_images {
      * @param	[string - value]
      * @return	string
      */
-    public function param_folder($value = null) {
+    public function param_folder($value = null)
+    {
         // Get the folders
         $this->CI->load->model('files/file_folders_m');
-        $tree = $this->CI->file_folders_m->get_folders();
-        $tree = (array) $tree;
-        if (!$tree) {
+        $tree = (array) $this->CI->file_folders_m->get_folders();
+
+        if (!$tree)
+        {
             return '<em>' . lang('streams:file.folder_notice') . '</em>';
         }
+
         $choices = array();
-        foreach ($tree as $tree_item) {
+        foreach ($tree as $tree_item)
+        {
             // We are doing this to be backwards compat
             // with PyroStreams 1.1 and below where
             // This is an array, not an object
             $tree_item = (object) $tree_item;
             $choices[$tree_item->id] = $tree_item->name;
         }
+
         return form_dropdown('folder', $choices, $value);
     }
 
@@ -278,13 +325,14 @@ class Field_multiple_images {
      * @param	[string - value]
      * @return	string
      */
-    public function param_max_limit_images($value = null) {
+    public function param_max_limit_images($value = null)
+    {
 
         return form_input(array(
-                    'name' => 'max_limit_images',
-                    'value' => !empty($value) ? $value : 5,
-                    'type' => 'text'
-                ));
+            'name' => 'max_limit_images',
+            'value' => !empty($value) ? $value : 5,
+            'type' => 'text'
+        ));
     }
 
     // ----------------------------------------------------------------------
@@ -296,11 +344,14 @@ class Field_multiple_images {
      * @param	obj
      * @return	string
      */
-    private function obvious_alt($image) {
-        if ($image->alt_attribute) {
+    private function obvious_alt($image)
+    {
+        if ($image->alt_attribute)
+        {
             return $image->alt_attribute;
         }
-        if ($image->description) {
+        if ($image->description)
+        {
             return $image->description;
         }
         return $image->name;
@@ -308,36 +359,49 @@ class Field_multiple_images {
 
     // ----------------------------------------------------------------------
 
-    private function _table_data($field, $stream = null) {
-        if (empty($stream)) {
-            $steam_slug = $field->stream_slug;
-        } else {
-            $steam_slug = $stream->stream_slug;
+    private function _table_data($field, $stream = null)
+    {
+        if (empty($stream))
+        {
+            $stream_slug = $field->stream_slug;
         }
+        else
+        {
+            $stream_slug = $stream->stream_slug;
+        }
+
+
+
         return (object) array(
-                    'table' => (!empty($field->field_data['table_name']) ? $field->field_data['table_name'] : "{$steam_slug}_{$field->field_slug}"),
-                    'resource_id_column' => (!empty($field->field_data['resource_id_column'])) ? $field->field_data['resource_id_column'] : 'resource_id',
-                    'file_id_column' => (!empty($field->field_data['file_id_column']) ? $field->field_data['file_id_column'] : 'file_id')
+                'table' => (!empty($field->field_data['table_name']) ? $field->field_data['table_name'] : "{$stream_slug}_{$field->field_slug}"),
+                'resource_id_column' => (!empty($field->field_data['resource_id_column'])) ? $field->field_data['resource_id_column'] : 'resource_id',
+                'file_id_column' => (!empty($field->field_data['file_id_column']) ? $field->field_data['file_id_column'] : 'file_id')
         );
     }
 
     // ----------------------------------------------------------------------
 
-    private function _clean_files($field, $stream = null) {
+    private function _clean_files($field, $stream = null)
+    {
         $this->CI->load->library('files/files');
         $table_data = $this->_table_data($field, $stream);
         $content = Files::folder_contents($field->field_data['folder']);
         $files = $content['data']['file'];
         $valid_files = $this->CI->db->select($table_data->file_id_column . ' as id')->from($table_data->table)->get()->result();
         $valid_files_ids = array();
-        if (!empty($valid_files)) {
-            foreach ($valid_files as $vf) {
+        if (!empty($valid_files))
+        {
+            foreach ($valid_files as $vf)
+            {
                 array_push($valid_files_ids, $vf->id);
             }
         }
-        if (!empty($files)) {
-            foreach ($files as $file) {
-                if (!in_array($file->id, $valid_files_ids)) {
+        if (!empty($files))
+        {
+            foreach ($files as $file)
+            {
+                if (!in_array($file->id, $valid_files_ids))
+                {
                     Files::delete_file($file->id);
                 }
             }
@@ -346,13 +410,15 @@ class Field_multiple_images {
 
     // ----------------------------------------------------------------------
 
-    public function entry_destruct($entry, $field, $stream) {
+    public function entry_destruct($entry, $field, $stream)
+    {
         $this->CI->load->library('files/files');
         $table_data = $this->_table_data($field, $stream);
         /** first lets get the images that we need to delete * */
         $rows = $this->CI->db->where($table_data->resource_id_column, $entry->id)->get($table_data->table)->result();
         /** lets remove the files * */
-        foreach ($rows as $r) {
+        foreach ($rows as $r)
+        {
             Files::delete_file($r->{$table_data->file_id_column});
         }
         /** Now lets delete the entries in the table * */
@@ -364,17 +430,24 @@ class Field_multiple_images {
      * @param type $field
      * @param type $stream
      */
-    public function field_assignment_destruct($field, $stream) {
+    public function field_assignment_destruct($field, $stream)
+    {
         $this->CI->load->library('files/files');
         $table_data = $this->_table_data($field, $stream);
         /** first lets get the images that we need to delete * */
-        $rows = $this->CI->db->get($table_data->table)->result();
-        /** lets remove the files * */
-        foreach ($rows as $r) {
-            Files::delete_file($r->{$table_data->file_id_column});
+        if ($this->CI->db->table_exists($table_data->table))
+        {
+            $rows = $this->CI->db->get($table_data->table)->result();
+
+
+            /** lets remove the files * */
+            foreach ($rows as $r)
+            {
+                Files::delete_file($r->{$table_data->file_id_column});
+            }
+            /** Drop the table! * */
+            $this->CI->dbforge->drop_table($table_data->table);
         }
-        /** Drop the table! * */
-        $this->CI->dbforge->drop_table($table_data->table);
     }
 
     // ----------------------------------------------------------------------
@@ -383,23 +456,28 @@ class Field_multiple_images {
      * @param type $field
      * @param type $stream
      */
-    public function field_assignment_construct($field, $stream) {
+    public function field_assignment_construct($field, $stream)
+    {
         $table_data = $this->_table_data($field, $stream);
+
+
         $table = $table_data->table;
         $resource_id_column = $table_data->resource_id_column;
         $file_id_column = $table_data->file_id_column;
+
         /**
          * If the table to store the images does not exists, please create it
          */
-        if (!$this->CI->db->table_exists($table)) {
+        if (!$this->CI->db->table_exists($table))
+        {
             $fields = array(
                 $resource_id_column => array(
-                    'type' => 'VARCHAR',
-                    'constraint' => '100',
+                    'type' => 'INT',
+                    'constraint' => 9,
                 ),
                 $file_id_column => array(
-                    'type' => 'VARCHAR',
-                    'constraint' => '100',
+                    'type' => 'CHAR',
+                    'constraint' => 15,
                 )
             );
             $this->CI->dbforge->add_field($fields);

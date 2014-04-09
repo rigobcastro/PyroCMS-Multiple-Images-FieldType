@@ -1,7 +1,3 @@
-
-
-
-
 <div id="upload-container">
     <div id="drop-target">
         <div class="drop-area" style="display: none;">
@@ -14,25 +10,24 @@
     </div>
 </div>
 
-<div id="multiple-images-gallery">
-</div>
+<div id="multiple-images-gallery"></div>
 <div style="clear: both"></div>
-
-
-
 
 <script id="image-template" type="text/x-handlebars-template">
     <div id="file-{{id}}" class="thumb {{#unless is_new}} load {{/unless}}">
     <div class="image-preview">
-    
+
     {{#if is_new}}
-        <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
+    <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
     {{/if}}
-    
+
     <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
     <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
-    <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
+    <a class="delete-image" href="#">
+    <span class="iconmoon iconmoon-close"></span>
+    </a>   
     </div>
+
     </div>
 </script>
 
