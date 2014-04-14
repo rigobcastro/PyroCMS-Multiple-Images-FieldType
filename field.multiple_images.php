@@ -121,59 +121,6 @@ class Field_multiple_images {
         }
     }
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Pre Ouput
-     *
-     * Process before outputting on the CP. Since
-     * there is less need for performance on the back end,
-     * this is accomplished via just grabbing the title column
-     * and the id and displaying a link (ie, no joins here).
-     *
-     * @access	public
-     * @param	array 	$input 	
-     * @return	mixed 	null or string
-     */
-    public function pre_output($input, $data) {
-        if (!$input)
-            return null;
-        $stream = $this->CI->streams_m->get_stream($data['choose_stream']);
-        $title_column = $stream->title_column;
-        // -------------------------------------
-        // Data Checks
-        // -------------------------------------
-        // Make sure the table exists still. If it was deleted we don't want to
-        // have everything go to hell.
-        if (!$this->CI->db->table_exists($stream->stream_prefix . $stream->stream_slug)) {
-            return null;
-        }
-
-        // We need to make sure the select is NOT NULL.
-        // So, if we have no title column, let's use the id
-        if (trim($title_column) == '') {
-            $title_column = 'id';
-        }
-
-        // -------------------------------------
-        // Get the entry
-        // -------------------------------------
-        $row = $this->CI->db
-                ->select()
-                ->where('id', $input)
-                ->get($stream->stream_prefix . $stream->stream_slug)
-                ->row_array();
-        if ($this->CI->uri->segment(1) == 'admin') {
-            if (isset($data['link_uri']) and !empty($data['link_uri'])) {
-                return '<a href="' . site_url(str_replace(array('-id-', '-stream-'), array($row['id'], $stream->stream_slug), $data['link_uri'])) . '">' . $row[$title_column] . '</a>';
-            } else {
-                return '<a href="' . site_url('admin/streams/entries/view/' . $stream->id . '/' . $row['id']) . '">' . $row[$title_column] . '</a>';
-            }
-        } else {
-            return $row;
-        }
-    }
-
     /**
      * User Field Type Query Build Hook
      *
@@ -194,6 +141,9 @@ class Field_multiple_images {
 
     /** Alt Pre output * */
     public function alt_pre_output($row_id, $params, $field_type, $stream) {
+        if ($this->CI->uri->segment(1) == 'admin') {
+            return false;
+        }
         $table = $this->_table_data((object) $params);
         $file_id_column = !empty($table->file_id_column) ? $table->file_id_column : 'file_id';
         $resource_id_column = !empty($table->resource_id) ? $table->resource_id : 'resource_id';
