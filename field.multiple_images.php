@@ -52,7 +52,8 @@ class Field_multiple_images {
                 'folder_id' => $field->field_data['folder'],
             ),
             'upload_url' => $upload_url,
-            'is_new' => empty($entry_id)
+            'is_new' => empty($entry_id),
+            'max_limit_images' => $field->field_data['max_limit_images']
         );
         if (!empty($entry_id)) {
             $table_data = $this->_table_data($field);

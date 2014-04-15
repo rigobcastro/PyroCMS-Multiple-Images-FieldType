@@ -1,7 +1,3 @@
-
-
-
-
 <div id="upload-container">
     <div id="drop-target">
         <div class="drop-area" style="display: none;">
@@ -13,26 +9,21 @@
         </div>
     </div>
 </div>
-
 <div id="multiple-images-gallery">
 </div>
 <div style="clear: both"></div>
-
-
-
-
 <script id="image-template" type="text/x-handlebars-template">
     <div id="file-{{id}}" class="thumb {{#unless is_new}} load {{/unless}}">
-    <div class="image-preview">
-    
-    {{#if is_new}}
-        <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
-    {{/if}}
-    
-    <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
-    <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
-    <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
-    </div>
+        <div class="image-preview">
+
+            {{#if is_new}}
+            <div class="loading-multiple-images loading-multiple-images-spin-medium" style="position:absolute; z-index: 9999; left:40%; top:25%"></div>
+            {{/if}}
+
+            <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
+            <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
+            <a class="delete-image" href="#"><i class="icon-remove icon-large"></i></a>   
+        </div>
     </div>
 </script>
 
@@ -55,11 +46,11 @@
         });
 
         var nativeFiles = {},
-            isHTML5 = false,
-            $image_template = Handlebars.compile($('#image-template').html()),
-            $images_list = $('#multiple-images-gallery'),
-            entry_is_new = <?= json_encode($is_new) ?>,
-            images = <?= json_encode($images) ?>;
+        isHTML5 = false,
+        $image_template = Handlebars.compile($('#image-template').html()),
+        $images_list = $('#multiple-images-gallery'),
+        entry_is_new = <?= json_encode($is_new) ?>,
+        images = <?= json_encode($images) ?>;
 
         uploader.bind('PostInit', function() {
             isHTML5 = uploader.runtime === "html5";
@@ -103,26 +94,38 @@
         uploader.init();
 
         uploader.bind('FilesAdded', function(up, files) {
-
+            var max_files = <?php echo (int) $max_limit_images ?>;
+            var ShowAlert = false;
+            var t = 1;
             $.each(files, function(i, file) {
-                if (isHTML5) {
-                    var reader = new FileReader();
+                if(t > max_files){
+                    up.removeFile(file);
+                    ShowAlert = true;
+                }else{
+                    if (isHTML5) {
+                        var reader = new FileReader();
 
-                    reader.onload = (function(file, id) {
-                        return function(e) {
-                            return add_image({
-                                id: id,
-                                url: e.target.result,
-                                is_new: true
-                            });
-                        };
-                    })(nativeFiles[i], file.id);
+                        reader.onload = (function(file, id) {
+                            return function(e) {
+                                return add_image({
+                                    id: id,
+                                    url: e.target.result,
+                                    is_new: true
+                                });
+                            };
+                        })(nativeFiles[i], file.id);
 
-                    reader.readAsDataURL(nativeFiles[i]);
-                } else {
-                    $('#filelist').append('<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>' + '</div>');
+                        reader.readAsDataURL(nativeFiles[i]);
+                    } else {
+                        $('#filelist').append('<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize(file.size) + ') <b></b>' + '</div>');
+                    }
                 }
+                t++;
             });
+            
+            if(ShowAlert){
+                alert('<?php echo lang('streams:multiple_images.max_limit_error_js') ?>');
+            }
 
             uploader.start();
 
@@ -179,7 +182,7 @@
 
         $(document).on('click', '.delete-image', function(e) {
             var $this = $(this),
-                file_id = $this.parent().find('input.images-input').val();
+            file_id = $this.parent().find('input.images-input').val();
 
             if (confirm(pyro.lang.dialog_message)) {
                 $.post(SITE_URL + 'admin/files/delete_file', {file_id: file_id}, function(json) {
@@ -201,7 +204,7 @@
             placeholder: "sortable-placeholder",
             update: function() {
                 var sortedIDs = $(this).sortable("toArray"),
-                    data = {order: {files: []}};
+                data = {order: {files: []}};
 
                 for (var id in sortedIDs) {
                     data.order.files.push(sortedIDs[id].replace('file-', ''));

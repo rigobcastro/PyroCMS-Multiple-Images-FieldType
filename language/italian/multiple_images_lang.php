@@ -11,3 +11,4 @@ $lang['streams:multiple_images.adding_error'] = 'Il file non pu&ograve; essere c
 $lang['streams:multiple_images.folder'] = 'Cartella';
 $lang['streams:multiple_images.table_name'] = 'Nome tabella';
 $lang['streams:multiple_images.max_limit_images'] = 'Numero massimo di immagini consentite';
+$lang['streams:multiple_images.max_limit_error_js'] = 'You have reached the maximun amount of images allowed, the system will only load the amount authoriced.';
