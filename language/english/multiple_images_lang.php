@@ -11,3 +11,4 @@ $lang['streams:multiple_images.adding_error'] = 'The file could not be added, pl
 $lang['streams:multiple_images.folder'] = 'Folder';
 $lang['streams:multiple_images.table_name'] = 'Table name';
 $lang['streams:multiple_images.max_limit_images'] = 'Max images allowed';
+$lang['streams:multiple_images.max_limit_error_js'] = 'You have reached the maximun amount of images allowed, the system will only load the amount authoriced.';

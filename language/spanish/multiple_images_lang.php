@@ -15,3 +15,4 @@ $lang['streams:multiple_images.table_name'] = 'Nombre de la tabla';
 $lang['streams:multiple_images.resource_id_column'] = 'Nombre del campo relacionado';
 $lang['streams:multiple_images.file_id_column'] = 'Nombre del campo para la imagen';
 $lang['streams:multiple_images.max_limit_images'] = 'Cantidad de imagenes permitidas';
+$lang['streams:multiple_images.max_limit_error_js'] = 'Has cargado mas imagenes de las permitidas, el sistema solo subira el maximo permitido en la configuracion.';
