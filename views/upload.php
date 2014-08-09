@@ -50,11 +50,11 @@
         });
 
         var nativeFiles = {},
-            isHTML5 = false,
-            $image_template = Handlebars.compile($('#image-template').html()),
-            $images_list = $('#multiple-images-gallery'),
-            entry_is_new = <?= json_encode($is_new) ?>,
-            images = <?= json_encode($images) ?>;
+                isHTML5 = false,
+                $image_template = Handlebars.compile($('#image-template').html()),
+                $images_list = $('#multiple-images-gallery'),
+                entry_is_new = <?= json_encode($is_new) ?>,
+                images = <?= json_encode($images) ?>;
 
         uploader.bind('PostInit', function() {
             isHTML5 = uploader.runtime === "html5";
@@ -134,12 +134,22 @@
         });
 
         uploader.bind('Error', function(up, error) {
-            pyro.add_notification('<div class="alert error"><p><?= lang('streams:multiple_images.adding_error') ?></p></div>');
+            if (typeof (pyro) !== "undefined") {
+                pyro.add_notification('<div class="alert error"><p><?= lang('streams:multiple_images.adding_error') ?></p></div>');
+            }
             up.refresh();
         });
 
         uploader.bind('FileUploaded', function(up, file, info) {
             var response = JSON.parse(info.response);
+            if (response.status === false) {
+                $file(file.id).remove();
+                if (typeof (pyro) !== "undefined") {
+                    pyro.add_notification('<div class="alert error"><p>' + response.message + '</p></div>');
+                }
+                $(window).off('beforeunload');
+                return false;
+            }
             $file(file.id).addClass('load').find('.images-input').val(response.data.id);
             $file(file.id).find('.image-link').attr('href', response.data.path.replace("{{ url:site }}", SITE_URL));
             $file(file.id).find('.loading-multiple-images').remove();
@@ -174,7 +184,7 @@
 
         $(document).on('click', '.delete-image', function(e) {
             var $this = $(this),
-                file_id = $this.parent().find('input.images-input').val();
+                    file_id = $this.parent().find('input.images-input').val();
 
             if (confirm(pyro.lang.dialog_message)) {
                 $.post(SITE_URL + 'admin/files/delete_file', {file_id: file_id}, function(json) {
@@ -190,24 +200,25 @@
 
             return e.preventDefault();
         });
+        if (typeof ($.sortable) !== "undefined") {
+            $("#multiple-images-gallery").sortable({
+                cursor: 'move',
+                placeholder: "sortable-placeholder",
+                update: function() {
+                    var sortedIDs = $(this).sortable("toArray"),
+                            data = {order: {files: []}};
 
-        $("#multiple-images-gallery").sortable({
-            cursor: 'move',
-            placeholder: "sortable-placeholder",
-            update: function() {
-                var sortedIDs = $(this).sortable("toArray"),
-                    data = {order: {files: []}};
-
-                for (var id in sortedIDs) {
-                    data.order.files.push(sortedIDs[id].replace('file-', ''));
-                }
-
-                $.post(SITE_URL + 'admin/files/order', data, function(json) {
-                    if (json.status === false) {
-                        alert(json.message);
+                    for (var id in sortedIDs) {
+                        data.order.files.push(sortedIDs[id].replace('file-', ''));
                     }
-                }, 'json');
-            }
-        }).disableSelection();
+
+                    $.post(SITE_URL + 'admin/files/order', data, function(json) {
+                        if (json.status === false) {
+                            alert(json.message);
+                        }
+                    }, 'json');
+                }
+            }).disableSelection();
+        }
     });
 </script>
