@@ -32,6 +32,10 @@ Drop or select images from your PC, they will be uploaded and related to the ent
 	{{/field_slug}}
 
 
+Important Note
+===========================
+Do not use a folder to upload the images that already has files, the field type WILL DELETE any file in the folder that does not belong to the fieldtype itselt. This was done this way to keep the folder clean when images are uploaded but not saved. This method is in review for the next release.
+
 Properties
 ===========================
 

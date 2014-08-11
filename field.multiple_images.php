@@ -47,7 +47,12 @@ class Field_multiple_images {
 
 
         $this->CI->load->library('files/files');
-        $this->_clean_files($field);
+        /**
+         * This method has to be reviewed due to the fact that it deletes any file 
+         * in the folder that is not in the DB table, if there are files that 
+         * does not belong to the field they will be deleted.
+         * $this->_clean_files($field);
+         */
         $upload_url = site_url('admin/files/upload');
         $data = array(
             'multipart_params' => array(
