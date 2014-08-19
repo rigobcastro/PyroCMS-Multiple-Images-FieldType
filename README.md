@@ -1,7 +1,7 @@
 PyroCMS-Multiple-Images-FieldType
 =================================
 
-Add multiple images to your streams using a very nice html5 file uploader [plupload](http://www.plupload.com/) version 1.5.7
+Add multiple images to your streams using a very nice html5 file uploader [plupload](http://www.plupload.com/)
 
 
 Team
