@@ -46,7 +46,7 @@
 .iconmoon-close:before {
   content: "\e601";
 }
-#drop-target.html5 {
+.drop-target.html5 {
   border: 2px dashed rgba(128, 128, 128, 0.4);
   color: rgba(128, 128, 128, 0.5);
   display: block;
@@ -58,7 +58,7 @@
   -webkit-transition: all 0.2s ease-out;
   transition: all 0.2s ease-out;
 }
-#drop-target.html5.dragenter {
+.drop-target.html5.dragenter {
   background-color: rgba(0, 255, 255, 0.05);
   border-color: #808080;
   color: #808080;

@@ -4,8 +4,9 @@
     <script type="text/javascript" src="<?=base_url('streams_core/field_asset/js/multiple_images/plupload.full.min.js');?>"></script>
     <script type="text/javascript" src="<?=base_url('streams_core/field_asset/js/multiple_images/handlebars.js');?>"></script>
 <?php endif; ?>
-<div id="upload-container">
-    <div id="drop-target">
+<?php $rand = rand(); ?>
+<div id="upload-container<?php echo $rand ?>">
+    <div id="drop-target<?php echo $rand ?>" class="drop-target">
         <div class="drop-area" style="display: none;">
             <span><?php echo lang('streams:multiple_images.help_draganddrop') ?></span>
             <span style="display: none;"><?php echo lang('streams:multiple_images.drop_images_here') ?></span>
@@ -16,10 +17,10 @@
     </div>
 </div>
 
-<div id="multiple-images-gallery"></div>
+<div id="multiple-images-gallery<?php echo $rand ?>"></div>
 <div style="clear: both"></div>
 
-<script id="image-template" type="text/x-handlebars-template">
+<script id="image-template<?php echo $rand ?>" type="text/x-handlebars-template">
     <div id="file-{{id}}" class="thumb {{#unless is_new}} load {{/unless}}">
     <div class="image-preview">
 
@@ -42,16 +43,16 @@
 
         var nativeFiles = {},
                 isHTML5 = false,
-                $image_template = Handlebars.compile($('#image-template').html()),
-                $images_list = $('#multiple-images-gallery'),
+                $image_template = Handlebars.compile($('#image-template<?php echo $rand ?>').html()),
+                $images_list = $('#multiple-images-gallery<?php echo $rand ?>'),
                 entry_is_new = <?= json_encode($is_new) ?>,
                 images = <?= json_encode($images) ?>;
 
         var uploader = new plupload.Uploader({
             runtimes: 'html5,flash',
-            browse_button: 'drop-target',
-            drop_element: 'drop-target',
-            container: 'upload-container',
+            browse_button: 'drop-target<?php echo $rand ?>',
+            drop_element: 'drop-target<?php echo $rand ?>',
+            container: 'upload-container<?php echo $rand ?>',
             max_file_size: '<?= Settings::get('files_upload_limit') ?>mb',
             url: <?= json_encode($upload_url) ?>,
             flash_swf_url: '/plupload/js/Moxie.swf',
@@ -66,7 +67,7 @@
                     isHTML5 = uploader.runtime === "html5";
                     if (isHTML5) {
 
-                        $('#drop-target').addClass('html5').on({
+                        $('#drop-target<?php echo $rand ?>').addClass('html5').on({
                             drop: function(e) {
                                 var files = e.originalEvent.dataTransfer.files;
                                 nativeFiles = files;
@@ -76,10 +77,10 @@
 
                         $('body').on({
                             dragenter: function() {
-                                return $('#drop-target').addClass('dragenter').find('.drop-area span:first').hide().next().show();
+                                return $('#drop-target<?php echo $rand ?>').addClass('dragenter').find('.drop-area span:first').hide().next().show();
                             },
                             dragleave: function() {
-                                return $('#drop-target').removeClass('dragenter').find('.drop-area span:last').hide().prev().show();
+                                return $('#drop-target<?php echo $rand ?>').removeClass('dragenter').find('.drop-area span:last').hide().prev().show();
                             }
                         });
 
@@ -185,7 +186,7 @@
             return e.preventDefault();
         });
         if (typeof ($.sortable) !== "undefined") {
-            $("#multiple-images-gallery").sortable({
+            $("#multiple-images-gallery<?php echo $rand ?>").sortable({
                 cursor: 'move',
                 placeholder: "sortable-placeholder",
                 update: function() {
