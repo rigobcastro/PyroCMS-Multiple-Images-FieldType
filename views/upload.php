@@ -30,7 +30,7 @@
 
     <a class="image-link" href="{{url}}" rel="multiple_images"><img src="{{url}}" alt="{{name}}" /></a>
     <input class="images-input" type="hidden" name="<?php echo $field_slug ?>[]" value="{{id}}" />
-    <a class="delete-image" href="#">
+    <a class="delete-image" href="javascript:;">
     <span class="fa fa-trash-o"></span>
     </a>   
     </div>
@@ -162,12 +162,15 @@
 
         /* Events! */
 
+        $(document).off('click', '.image-link');
         $(document).on('click', '.image-link', function() {
             $.colorbox({href: this.href, open: true});
             return false;
         });
 
+        $(document).off('click', '.delete-image');
         $(document).on('click', '.delete-image', function(e) {
+
             var $this = $(this),
                     file_id = $this.parent().find('input.images-input').val();
 
@@ -185,6 +188,7 @@
 
             return e.preventDefault();
         });
+
         if (typeof ($.sortable) !== "undefined") {
             $("#multiple-images-gallery<?php echo $rand ?>").sortable({
                 cursor: 'move',
