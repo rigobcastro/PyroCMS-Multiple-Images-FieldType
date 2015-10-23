@@ -53,6 +53,7 @@ class Field_multiple_images {
             ),
             'upload_url' => $upload_url,
             'is_new' => empty($entry_id),
+            'images' => array(),
             'max_limit_images' => $field->field_data['max_limit_images']
         );
         if (!empty($entry_id)) {
